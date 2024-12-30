@@ -5,7 +5,7 @@ from collections import OrderedDict
 import toml
 
 
-def parse_author(author_str):
+def convert_author(author_str):
     if not isinstance(author_str, str):
         return {}
 
@@ -47,7 +47,7 @@ def convert_version(version):
         return f"=={version}"
 
 
-def get_uv_project(pyproject_data):
+def convert_uv_project(pyproject_data):
     poetry_data = pyproject_data.get("tool", {}).get("poetry", {})
     project = OrderedDict(
         [
@@ -67,10 +67,10 @@ def get_uv_project(pyproject_data):
     if "authors" in poetry_data:
         authors = []
         for author in poetry_data["authors"]:
-            authors.append(parse_author(author))
+            authors.append(convert_author(author))
         project["authors"] = authors
 
-    project["dependencies"] = get_uv_dependencies(pyproject_data)
+    project["dependencies"] = convert_uv_dependencies(pyproject_data)
 
     poetry_dependencies = (
         pyproject_data.get("tool", {}).get("poetry", {}).get("dependencies", {})
@@ -81,7 +81,7 @@ def get_uv_project(pyproject_data):
     return project
 
 
-def get_uv_dependencies(pyproject_data):
+def convert_uv_dependencies(pyproject_data):
     poetry_dependencies = (
         pyproject_data.get("tool", {}).get("poetry", {}).get("dependencies", {})
     )
@@ -92,7 +92,7 @@ def get_uv_dependencies(pyproject_data):
     return project_dependencies
 
 
-def get_tool_uv(pyproject_data):
+def convert_tool_uv(pyproject_data):
     tool_uv = {
         "uv": OrderedDict(
             [
@@ -125,6 +125,17 @@ def get_tool_uv(pyproject_data):
     if len(index) > 0:
         tool_uv["uv"]["index"] = index
     return tool_uv
+
+
+def convert_build_system(pyproject_data):
+    poetry_data = pyproject_data.get("build-system", {})
+    return {
+        "requires", ["hatchling"],
+        "build-backend", "hatchling.build",
+    } if poetry_data["build-backend"] == "poetry.core.masonry.api" else {
+        "requires", ["setuptools>=70"],
+        "build-backend", "setuptools.build_meta",
+    }
 
 
 def remove_empty_sections(data):
@@ -175,12 +186,9 @@ def migrate_pyproject_to_uv(path):
         ]
     )
 
-    uv_pyproject_data["project"] = get_uv_project(pyproject_data)
-    uv_pyproject_data["tool"] = get_tool_uv(pyproject_data)
-    uv_pyproject_data["build-system"] = {
-        "requires": ["setuptools>=70"],
-        "build-backend": "setuptools.build_meta",
-    }
+    uv_pyproject_data["project"] = convert_uv_project(pyproject_data)
+    uv_pyproject_data["tool"] = convert_tool_uv(pyproject_data)
+    uv_pyproject_data["build-system"] = convert_build_system(pyproject_data)
 
     remove_empty_sections(uv_pyproject_data)
 
