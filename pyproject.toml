@@ -10,3 +10,12 @@ authors = [
 dependencies = [
     "toml>=0.10.2",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+sources = [
+    "poetry_to_uv_migrator"
+]

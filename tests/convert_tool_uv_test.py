@@ -1,6 +1,6 @@
 import unittest
 
-from migrate_poetry_to_uv import convert_tool_uv
+from poetry_to_uv_migrator.migrate_poetry_to_uv import convert_tool_uv
 from tests.test_project_data import get_sample_poetry_pyproject_data, expected_uv_pyproject_data
 
 

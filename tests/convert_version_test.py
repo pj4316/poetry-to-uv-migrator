@@ -1,6 +1,6 @@
 import unittest
 
-from migrate_poetry_to_uv import convert_version
+from poetry_to_uv_migrator.migrate_poetry_to_uv import convert_version
 
 
 class ConvertVersionTestCase(unittest.TestCase):
