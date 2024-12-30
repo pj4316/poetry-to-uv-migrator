@@ -1,0 +1,12 @@
+[project]
+name = "poetry-to-uv-migrator"
+version = "0.1.0"
+description = "poetry to uv migrator"
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+authors = [
+    { name = "Max Lee", email = "pj4316@naver.com" }
+]
+dependencies = [
+    "toml>=0.10.2",
+]
